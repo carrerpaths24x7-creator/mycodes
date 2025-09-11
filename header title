@@ -1,0 +1,27 @@
+/* Import Fjalla One font */
+@import url('https://fonts.google.com/specimen/RobotocategoryFilters=Sans+Serif:%2FSans%2FNeo+Grotesque');
+
+/* Site Title with 3D Effect */
+.site-title a {
+    font-family: 'Roboto', sans-serif;
+    font-size: 42px;                /* bigger for 3D impact */
+    font-weight: bold;              /* bold text */
+    color: #ffffff !important;      /* white color */
+    text-decoration: none;
+    text-transform: uppercase;      /* optional: all caps */
+    text-shadow: 1px 1px 0 #000000, /* black shadow for depth */
+                 4px 4px 0 #444444; /* dark gray for 3D layering */
+}
+
+/* Site Tagline with Bold 3D Style */
+.site-description {
+    font-family: 'Roboto', sans-serif;
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffffff !important;
+    text-shadow: 2px 2px 0 #000000,
+                 2px 2px 0 #444444;
+}
+
+
+
