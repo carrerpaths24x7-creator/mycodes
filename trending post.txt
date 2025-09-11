@@ -1,0 +1,24 @@
+<section class="trending-posts">
+  <h2 class="trending-title">🔥 Trending Posts</h2>
+  <div class="trending-grid">
+    <article class="trending-item">
+      <a href="#">
+        <img src="carrerpaths.com/dee-assam-lp-up-teacher-merit-list-2025-check-1st-provisional-list-of-5550-posts/" alt="Post Thumbnail">
+        <h3>DEE Assam LP UP Teacher Merit List 2025 – Check 1st Provisional List of 5550 Posts</h3>
+      </a>
+    </article>
+    <article class="trending-item">
+      <a href="#">
+        <img src="https://www.carrerpaths.com/pgcil-recruitment-2025-1543-field-engineer-field-supervisor-vacancies-apply-online/" alt="Post Thumbnail">
+        <h3>PGCIL Recruitment 2025 – Apply for 1543 Field Engineer & Field Supervisor Vacancies</h3>
+      </a>
+    </article>
+    <article class="trending-item">
+      <a href="#">
+        <img src="https://www.carrerpaths.com/sbi-specialist-cadre-officers-recruitment-2025-apply-online-for-122-sco-posts/" alt="Post Thumbnail">
+        <h3>SBI Specialist Cadre Officers Recruitment 2025 – Apply Online for 122 SCO Posts</h3>
+      </a>
+    </article>
+  </div>
+</section>
+

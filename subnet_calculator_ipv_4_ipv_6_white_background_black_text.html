@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Subnet Calculator — IPv4 & IPv6</title>
+  <style>
+    :root{--bg:#ffffff;--fg:#000000;--accent:#111111}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--fg)}
+    .container{max-width:980px;margin:32px auto;padding:20px}
+    h1{font-size:1.6rem;margin:0 0 8px}
+    p.lead{margin:0 0 18px;color:var(--fg);opacity:0.9}
+    .card{border:1px solid rgba(0,0,0,0.08);padding:18px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.03)}
+    .row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+    label{font-size:0.9rem;width:140px}
+    input[type=text], input[type=number], select{flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;background:#fff;color:var(--fg)}
+    .btn{padding:8px 12px;border-radius:6px;border:1px solid #000;background:#fff;color:var(--fg);cursor:pointer}
+    .btn.primary{background:var(--fg);color:var(--bg)}
+    pre{white-space:pre-wrap;margin:0;padding:12px;border-radius:6px;background:rgba(0,0,0,0.03)}
+    .flex{display:flex;gap:8px;align-items:center}
+    .small{font-size:0.85rem;color:rgba(0,0,0,0.7)}
+    .result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+    .result{padding:10px;border-radius:6px;border:1px dashed rgba(0,0,0,0.06)}
+    .footer{margin-top:18px;font-size:0.85rem;color:rgba(0,0,0,0.6)}
+    @media (max-width:560px){label{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Subnet Calculator — IPv4 & IPv6</h1>
+    <p class="lead">White background, black text. Enter an IP address and a prefix (CIDR) or mask. Choose IPv4 or IPv6 and click <strong>Calculate</strong>.</p>
+
+    <div class="card">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <label for="ipVersion">IP Version</label>
+        <select id="ipVersion" onchange="switchMode()">
+          <option value="4">IPv4</option>
+          <option value="6">IPv6</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>IP Address</label>
+        <input id="ipInput" type="text" placeholder="e.g. 192.168.1.10 or 2001:db8::1" />
+      </div>
+
+      <div class="row">
+        <label>Prefix / Mask</label>
+        <input id="prefixInput" type="text" placeholder="e.g. /24 or 255.255.255.0 or 64" />
+      </div>
+
+      <div class="row">
+        <div class="flex" style="margin-left:140px">
+          <button class="btn primary" onclick="calculate()">Calculate</button>
+          <button class="btn" onclick="resetFields()">Reset</button>
+        </div>
+      </div>
+
+      <div id="results" style="margin-top:6px">
+        <!-- results injected here -->
+      </div>
+    </div>
+
+    <div class="footer">Tip: For IPv4 you can enter mask like <code>255.255.255.0</code> or prefix like <code>/24</code>. For IPv6 enter prefix like <code>/64</code>.</div>
+  </div>
+
+  <script>
+    // Utility helpers for IPv4
+    function ipv4ToInt(ip){
+      const parts = ip.trim().split('.');
+      if(parts.length!==4) throw new Error('Invalid IPv4');
+      return parts.reduce((acc,p)=>{const n=parseInt(p); if(isNaN(n)||n<0||n>255) throw new Error('Invalid IPv4'); return (acc<<8) + n},0) >>> 0;
+    }
+    function intToIpv4(n){
+      return [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.')
+    }
+    function maskToPrefixIPv4(mask){
+      if(mask.includes('.')){
+        const m = ipv4ToInt(mask);
+        // count ones
+        let cnt=0; for(let i=31;i>=0;i--){ if((m>>i)&1) cnt++; else break }
+        return cnt;
+      }
+      // if numeric
+      return parseInt(mask.replace('/',''))
+    }
+
+    // IPv6 helpers using BigInt
+    function parseIPv6(addr){
+      // expand using browser's URL trick not available; implement expansion
+      // Split on ::
+      if(!addr) throw new Error('Empty IPv6');
+      let input = addr.trim();
+      const zoneIdx = input.indexOf('%'); if(zoneIdx!==-1) input = input.slice(0,zoneIdx);
+      const parts = input.split('::');
+      let left = parts[0] ? parts[0].split(':').filter(Boolean) : [];
+      let right = parts[1] ? parts[1].split(':').filter(Boolean) : [];
+      const missing = 8 - (left.length + right.length);
+      if(parts.length===1){ // no ::
+        if(left.length!==8) throw new Error('Invalid IPv6 format');
+        return left.map(h=>parseInt(h,16));
+      }
+      if(missing<0) throw new Error('Invalid IPv6 format');
+      const mid = Array(missing).fill('0');
+      const full = left.concat(mid).concat(right);
+      return full.map(h=>parseInt(h||'0',16));
+    }
+    function ipv6ToBigInt(addr){
+      const hextets = parseIPv6(addr);
+      let val = 0n;
+      for(const h of hextets){ val = (val << 16n) + BigInt(h & 0xFFFF); }
+      return val;
+    }
+    function bigIntToIPv6(bi){
+      const parts = [];
+      for(let i=0;i<8;i++){ const shift = BigInt(112 - 16*i); const part = Number((bi >> shift) & 0xFFFFn); parts.push(part.toString(16)); }
+      // compress longest run of zeros
+      const str = parts.join(':').replace(/(^|:)0(:0)+(:|$)/, function(m){ return m.replace(/(:|^)(0:)+/, '::'); });
+      return str;
+    }
+
+    function formatBigInt(n){
+      try{
+        return n.toString();
+      }catch(e){return String(n)}
+    }
+
+    function calculate(){
+      const ver = document.getElementById('ipVersion').value;
+      const ip = document.getElementById('ipInput').value.trim();
+      const prefixRaw = document.getElementById('prefixInput').value.trim();
+      const out = document.getElementById('results'); out.innerHTML='';
+      if(!ip || !prefixRaw){ out.innerHTML = '<pre class="small">Please enter both IP and prefix/mask.</pre>'; return; }
+
+      if(ver==='4'){
+        try{
+          // determine prefix
+          let prefix = prefixRaw.includes('.') ? maskToPrefixIPv4(prefixRaw) : parseInt(prefixRaw.replace('/',''));
+          if(isNaN(prefix) || prefix<0 || prefix>32) throw new Error('Invalid prefix');
+          const ipInt = ipv4ToInt(ip);
+          const maskInt = prefix===0?0: (~0 << (32-prefix)) >>> 0;
+          const network = ipInt & maskInt;
+          const broadcast = network | (~maskInt >>> 0);
+          const total = prefix===32?1: (2 ** (32-prefix));
+          const usable = Math.max(0, total - (prefix<=30?2: (prefix===31?0:0)) );
+          const first = (prefix<=30)? (network + 1) : ((prefix===31) ? network : network);
+          const last = (prefix<=30)? (broadcast -1) : ((prefix===31) ? (network + 1) : network);
+
+          const html = `
+            <div class="result-grid">
+              <div class="result"><strong>Network</strong><div class="small">${intToIpv4(network)}</div></div>
+              <div class="result"><strong>Broadcast</strong><div class="small">${intToIpv4(broadcast)}</div></div>
+              <div class="result"><strong>Netmask</strong><div class="small">${intToIpv4(maskInt)} (${prefix})</div></div>
+              <div class="result"><strong>Total addresses</strong><div class="small">${total.toLocaleString()}</div></div>
+              <div class="result"><strong>Usable hosts</strong><div class="small">${usable.toLocaleString()}</div></div>
+              <div class="result"><strong>First usable</strong><div class="small">${intToIpv4(first)}</div></div>
+              <div class="result"><strong>Last usable</strong><div class="small">${intToIpv4(last)}</div></div>
+            </div>
+          `;
+          out.innerHTML = html;
+        }catch(e){ out.innerHTML = `<pre class="small">Error: ${e.message}</pre>` }
+      }else{
+        // IPv6
+        try{
+          let prefix = prefixRaw.replace('/',''); prefix = parseInt(prefix);
+          if(isNaN(prefix) || prefix<0 || prefix>128) throw new Error('Invalid IPv6 prefix');
+          const ipVal = ipv6ToBigInt(ip);
+          const hostBits = 128 - prefix;
+          const networkMask = ((1n<<128n) - 1n) ^ ((1n<<BigInt(hostBits)) - 1n);
+          const network = ipVal & networkMask;
+          const first = network; // in IPv6, first is the network address
+          const last = network + ((1n<<BigInt(hostBits)) - 1n);
+          const total = 1n<<BigInt(hostBits);
+
+          const html = `
+            <div class="result-grid">
+              <div class="result"><strong>Network</strong><div class="small">${bigIntToIPv6(network)}/${prefix}</div></div>
+              <div class="result"><strong>First address</strong><div class="small">${bigIntToIPv6(first)}</div></div>
+              <div class="result"><strong>Last address</strong><div class="small">${bigIntToIPv6(last)}</div></div>
+              <div class="result"><strong>Total addresses</strong><div class="small">${formatBigInt(total)}</div></div>
+              <div class="result"><strong>Host bits</strong><div class="small">${hostBits}</div></div>
+              <div class="result"><strong>Notes</strong><div class="small">IPv6 has no broadcast; total addresses can be very large.</div></div>
+            </div>
+          `;
+          out.innerHTML = html;
+        }catch(e){ out.innerHTML = `<pre class="small">Error: ${e.message}</pre>` }
+      }
+    }
+
+    function resetFields(){ document.getElementById('ipInput').value=''; document.getElementById('prefixInput').value=''; document.getElementById('results').innerHTML=''; }
+    function switchMode(){ resetFields(); document.getElementById('ipInput').placeholder = document.getElementById('ipVersion').value==='4' ? 'e.g. 192.168.1.10' : 'e.g. 2001:db8::1'; document.getElementById('prefixInput').placeholder = document.getElementById('ipVersion').value==='4' ? 'e.g. /24 or 255.255.255.0' : 'e.g. /64'; }
+
+    // initialize
+    switchMode();
+  </script>
+</body>
+</html>
