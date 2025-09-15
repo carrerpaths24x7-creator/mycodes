@@ -1,0 +1,54 @@
+<h2>Important Links of OBC Scholarship 2025</h2>
+
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px">
+
+  <a href="https://scholarships.gov.in/ApplicationForm/login" target="_blank" rel="noopener"
+     style="flex:1;min-width:220px;text-align:center;background:#0066cc;color:#fff;
+            padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;
+            transition:0.3s;">
+     📝 Application Form
+  </a>
+
+  <a href="https://scholarships.gov.in/otrapplication/#/registration-page" target="_blank" rel="noopener"
+     style="flex:1;min-width:220px;text-align:center;background:#28a745;color:#fff;
+            padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;
+            transition:0.3s;">
+     🆕 One-Time Registration
+  </a>
+
+  <a href="https://pfms.nic.in/SitePages/Users/LoginDetails/Login.aspx" target="_blank" rel="noopener"
+     style="flex:1;min-width:220px;text-align:center;background:#ff9800;color:#fff;
+            padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;
+            transition:0.3s;">
+     💳 Track Your Payment
+  </a>
+
+  <a href="https://scholarships.gov.in/public/schemeGuidelines/POST_MATRIC_OBC_GUIDELINES.pdf" target="_blank" rel="noopener"
+     style="flex:1;min-width:220px;text-align:center;background:#9c27b0;color:#fff;
+            padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;
+            transition:0.3s;">
+     📑 Official Notification
+  </a>
+
+  <a href="https://scholarships.gov.in/public/FAQ/FAQ_ASSAM.pdf" target="_blank" rel="noopener"
+     style="flex:1;min-width:220px;text-align:center;background:#f44336;color:#fff;
+            padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;
+            transition:0.3s;">
+     ❓ FAQs
+  </a>
+
+  <a href="https://drive.google.com/file/d/1hnMfOvbS1mMN4R5CxydRAg7vdqDKM6m_/view" target="_blank" rel="noopener"
+     style="flex:1;min-width:220px;text-align:center;background:#ff5722;color:#fff;
+            padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;
+            transition:0.3s;">
+     📱 Install Android App
+  </a>
+
+  <a href="https://scholarships.gov.in" target="_blank" rel="noopener"
+     style="flex:1;min-width:220px;text-align:center;background:#333;color:#fff;
+            padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold;
+            transition:0.3s;">
+     🌐 Official Website
+  </a>
+
+</div>
