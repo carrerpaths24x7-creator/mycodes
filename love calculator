@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Love Calculator</title>
+  <style>
+    body {margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#ffdee9,#b5fffc)}
+    .container {background:white;padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.15);max-width:420px;width:100%;text-align:center}
+    h1 {margin:0 0 12px;font-size:24px;color:#d63384}
+    .input-group {margin:10px 0;}
+    input {width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;margin-top:6px}
+    button {margin-top:14px;padding:12px 18px;border:none;border-radius:10px;background:linear-gradient(90deg,#ff758c,#ff7eb3);color:white;font-weight:bold;font-size:15px;cursor:pointer;transition:transform 0.2s}
+    button:hover {transform:scale(1.05)}
+    .result {margin-top:20px;font-size:18px;font-weight:bold}
+    .emoji {font-size:40px;margin-top:8px}
+    .blast {animation: blast 1s ease-in-out infinite}
+    @keyframes blast {
+      0% {transform:scale(1)}
+      50% {transform:scale(1.5)}
+      100% {transform:scale(1)}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>❤️ Love Calculator ❤️</h1>
+    <div class="input-group">
+      <label>Your Name</label>
+      <input type="text" id="name1" placeholder="Enter first name">
+    </div>
+    <div class="input-group">
+      <label>Partner Name</label>
+      <input type="text" id="name2" placeholder="Enter second name">
+    </div>
+    <button onclick="calculateLove()">Calculate Love %</button>
+    <div class="result" id="result"></div>
+    <div class="emoji" id="emoji"></div>
+  </div>
+
+<script>
+function calculateLove(){
+  const n1 = document.getElementById('name1').value.trim();
+  const n2 = document.getElementById('name2').value.trim();
+  if(!n1 || !n2){
+    document.getElementById('result').innerText = 'Please enter both names';
+    document.getElementById('emoji').innerText = '';
+    return;
+  }
+  let percent = Math.floor(Math.random()*140); // allow above 100
+  document.getElementById('result').innerText = `Love Percentage: ${percent}%`;
+
+  const emojiEl = document.getElementById('emoji');
+  emojiEl.classList.remove('blast');
+  if(percent <= 40){
+    emojiEl.innerText = '😢';
+  } else if(percent <= 70){
+    emojiEl.innerText = '😍';
+  } else if(percent <= 100){
+    emojiEl.innerText = '💥❤️💥';
+  } else {
+    emojiEl.innerText = '💥💕💕❤️💕💕💥';
+    emojiEl.classList.add('blast');
+  }
+}
+</script>
+</body>
+</html>
